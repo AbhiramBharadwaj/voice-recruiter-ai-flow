@@ -49,10 +49,12 @@ const Index = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button className="w-full">
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  Start Interview
-                </Button>
+                <Link to="/interviews">
+                  <Button className="w-full">
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Start Interview
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
 
@@ -68,9 +70,11 @@ const Index = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button variant="secondary" className="w-full">
-                  Upload Resume
-                </Button>
+                <Link to="/candidates">
+                  <Button variant="secondary" className="w-full">
+                    Manage Candidates
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
 
@@ -86,9 +90,11 @@ const Index = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button variant="outline" className="w-full">
-                  View Reports
-                </Button>
+                <Link to="/analytics">
+                  <Button variant="outline" className="w-full">
+                    View Reports
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
 
@@ -104,9 +110,11 @@ const Index = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button variant="outline" className="w-full">
-                  Manage Candidates
-                </Button>
+                <Link to="/positions">
+                  <Button variant="outline" className="w-full">
+                    Manage Positions
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
 
@@ -122,9 +130,11 @@ const Index = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button variant="secondary" className="w-full">
-                  View Insights
-                </Button>
+                <Link to="/analytics">
+                  <Button variant="secondary" className="w-full">
+                    View Insights
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
 
@@ -140,9 +150,11 @@ const Index = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button className="w-full">
-                  Schedule Interview
-                </Button>
+                <Link to="/interviews">
+                  <Button className="w-full">
+                    Schedule Interview
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           </div>
@@ -158,12 +170,16 @@ const Index = () => {
               </CardHeader>
               <CardContent>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button size="lg" className="text-lg px-8">
-                    Start Your First Interview
-                  </Button>
-                  <Button variant="outline" size="lg" className="text-lg px-8">
-                    Learn More
-                  </Button>
+                  <Link to="/interviews">
+                    <Button size="lg" className="text-lg px-8">
+                      Start Your First Interview
+                    </Button>
+                  </Link>
+                  <Link to="/candidates">
+                    <Button variant="outline" size="lg" className="text-lg px-8">
+                      Manage Candidates
+                    </Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>

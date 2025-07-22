@@ -6,6 +6,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import Candidates from "./pages/Candidates";
+import Interviews from "./pages/Interviews";
+import Analytics from "./pages/Analytics";
+import JobPositions from "./pages/JobPositions";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,6 +24,10 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/candidates" element={<Candidates />} />
+            <Route path="/interviews" element={<Interviews />} />
+            <Route path="/analytics" element={<Analytics />} />
+            <Route path="/positions" element={<JobPositions />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
