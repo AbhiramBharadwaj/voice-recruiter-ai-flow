@@ -7,7 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Search, User, Mail, Phone, Briefcase, Calendar, MoreHorizontal, Edit, Trash2 } from 'lucide-react';
+import { Plus, Search, User, Mail, Phone, Briefcase, Calendar, MoreHorizontal, Edit, Trash2, Upload } from 'lucide-react';
+import { ResumeUpload } from '@/components/ResumeUpload';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -35,6 +36,7 @@ export default function Candidates() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showResumeUpload, setShowResumeUpload] = useState(false);
   const [editingCandidate, setEditingCandidate] = useState<Candidate | null>(null);
   const [formData, setFormData] = useState({
     full_name: '',
@@ -187,13 +189,19 @@ export default function Candidates() {
               <p className="text-muted-foreground mt-2">Manage your candidate pipeline</p>
             </div>
             
-            <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Candidate
-                </Button>
-              </DialogTrigger>
+            <div className="flex gap-2">
+              <Button onClick={() => setShowResumeUpload(true)}>
+                <Upload className="mr-2 h-4 w-4" />
+                Upload Resume
+              </Button>
+              
+              <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+                <DialogTrigger asChild>
+                  <Button variant="outline">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Manually
+                  </Button>
+                </DialogTrigger>
               <DialogContent className="max-w-2xl">
                 <DialogHeader>
                   <DialogTitle>{editingCandidate ? 'Edit Candidate' : 'Add New Candidate'}</DialogTitle>
@@ -307,6 +315,13 @@ export default function Candidates() {
                 </form>
               </DialogContent>
             </Dialog>
+            </div>
+
+            <ResumeUpload 
+              open={showResumeUpload} 
+              onOpenChange={setShowResumeUpload}
+              onSuccess={fetchCandidates}
+            />
           </div>
 
           <div className="mb-6">
