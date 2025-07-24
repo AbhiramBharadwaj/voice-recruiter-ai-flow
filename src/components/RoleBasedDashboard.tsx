@@ -240,14 +240,37 @@ export function RoleBasedDashboard() {
               <CardTitle>Practice MCQs</CardTitle>
             </div>
             <CardDescription>
-              Test your knowledge with multiple choice questions
+              Test your knowledge with multiple choice questions tailored to your resume
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant="secondary" className="w-full" disabled>
-              <MessageSquare className="mr-2 h-4 w-4" />
-              Coming Soon
-            </Button>
+            <Link to="/practice-mcqs">
+              <Button variant="secondary" className="w-full">
+                <MessageSquare className="mr-2 h-4 w-4" />
+                Start Practice
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
+          <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <CardHeader>
+            <div className="flex items-center space-x-2">
+              <FileText className="h-6 w-6 text-primary" />
+              <CardTitle>Resume Parser</CardTitle>
+            </div>
+            <CardDescription>
+              Get AI-powered feedback and suggestions for your resume
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link to="/resume-parser">
+              <Button variant="outline" className="w-full">
+                <FileText className="mr-2 h-4 w-4" />
+                Analyze Resume
+              </Button>
+            </Link>
           </CardContent>
         </Card>
 
