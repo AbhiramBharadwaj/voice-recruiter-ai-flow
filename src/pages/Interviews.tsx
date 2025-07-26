@@ -7,12 +7,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Search, Calendar, Clock, User, MoreHorizontal, Edit, Trash2, Play, BarChart3 } from 'lucide-react';
+import { Plus, Search, Calendar, Clock, Mic, Video, Code, MessageSquare, Play, BarChart3 } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 interface Interview {
   id: string;
@@ -26,25 +25,13 @@ interface Interview {
   sentiment_score?: number;
   technical_score?: number;
   communication_score?: number;
-  candidate_id: string;
-  candidates?: {
-    full_name: string;
-    email: string;
-  };
   created_at: string;
-}
-
-interface Candidate {
-  id: string;
-  full_name: string;
-  email: string;
 }
 
 export default function Interviews() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [interviews, setInterviews] = useState<Interview[]>([]);
-  const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -54,14 +41,12 @@ export default function Interviews() {
     description: '',
     scheduled_at: '',
     duration_minutes: '30',
-    interview_type: 'voice',
-    candidate_id: ''
+    interview_type: 'voice'
   });
 
   useEffect(() => {
     if (user) {
       fetchInterviews();
-      fetchCandidates();
     }
   }, [user]);
 
@@ -69,13 +54,7 @@ export default function Interviews() {
     try {
       const { data, error } = await supabase
         .from('interviews')
-        .select(`
-          *,
-          candidates (
-            full_name,
-            email
-          )
-        `)
+        .select('*')
         .eq('user_id', user?.id)
         .order('created_at', { ascending: false });
 
@@ -92,21 +71,6 @@ export default function Interviews() {
     }
   };
 
-  const fetchCandidates = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('candidates')
-        .select('id, full_name, email')
-        .eq('user_id', user?.id)
-        .eq('status', 'active');
-
-      if (error) throw error;
-      setCandidates(data || []);
-    } catch (error: any) {
-      console.error('Failed to load candidates:', error);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -118,7 +82,7 @@ export default function Interviews() {
         scheduled_at: formData.scheduled_at || null,
         duration_minutes: parseInt(formData.duration_minutes),
         interview_type: formData.interview_type,
-        candidate_id: formData.candidate_id
+        candidate_id: user?.id // Student schedules for themselves
       };
 
       if (editingInterview) {
@@ -142,7 +106,7 @@ export default function Interviews() {
       setEditingInterview(null);
       setFormData({
         title: '', description: '', scheduled_at: '', 
-        duration_minutes: '30', interview_type: 'voice', candidate_id: ''
+        duration_minutes: '30', interview_type: 'voice'
       });
       fetchInterviews();
     } catch (error: any) {
@@ -161,8 +125,7 @@ export default function Interviews() {
       description: interview.description || '',
       scheduled_at: interview.scheduled_at ? new Date(interview.scheduled_at).toISOString().slice(0, 16) : '',
       duration_minutes: interview.duration_minutes.toString(),
-      interview_type: interview.interview_type,
-      candidate_id: interview.candidate_id
+      interview_type: interview.interview_type
     });
     setShowAddDialog(true);
   };
@@ -207,7 +170,7 @@ export default function Interviews() {
 
   const filteredInterviews = interviews.filter(interview =>
     interview.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    interview.candidates?.full_name.toLowerCase().includes(searchTerm.toLowerCase())
+    interview.interview_type.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const getStatusBadgeVariant = (status: string) => {
@@ -230,52 +193,70 @@ export default function Interviews() {
           <div className="flex justify-between items-center mb-8">
             <div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                Interview Management
+                My Interviews
               </h1>
-              <p className="text-muted-foreground mt-2">Schedule and manage candidate interviews</p>
+              <p className="text-muted-foreground mt-2">Schedule and practice for your interviews</p>
             </div>
             
             <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
               <DialogTrigger asChild>
                 <Button>
                   <Plus className="mr-2 h-4 w-4" />
-                  Schedule Interview
+                  Book Interview
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl">
                 <DialogHeader>
-                  <DialogTitle>{editingInterview ? 'Edit Interview' : 'Schedule New Interview'}</DialogTitle>
+                  <DialogTitle>{editingInterview ? 'Edit Interview' : 'Book New Interview'}</DialogTitle>
                   <DialogDescription>
-                    {editingInterview ? 'Update interview details' : 'Create a new interview session'}
+                    {editingInterview ? 'Update your interview details' : 'Schedule a new practice interview session'}
                   </DialogDescription>
                 </DialogHeader>
                 
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
-                    <Label htmlFor="title">Interview Title *</Label>
+                    <Label htmlFor="interview_type">Interview Type *</Label>
+                    <Select value={formData.interview_type} onValueChange={(value) => setFormData({...formData, interview_type: value})} required>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Choose interview type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="voice">
+                          <div className="flex items-center gap-2">
+                            <Mic className="h-4 w-4" />
+                            Voice Interview
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="video">
+                          <div className="flex items-center gap-2">
+                            <Video className="h-4 w-4" />
+                            Video Interview
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="technical">
+                          <div className="flex items-center gap-2">
+                            <Code className="h-4 w-4" />
+                            Technical Assessment
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="behavioral">
+                          <div className="flex items-center gap-2">
+                            <MessageSquare className="h-4 w-4" />
+                            Behavioral Interview
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="title">Interview Title (Optional)</Label>
                     <Input
                       id="title"
                       value={formData.title}
                       onChange={(e) => setFormData({...formData, title: e.target.value})}
-                      placeholder="Technical Interview - Frontend Developer"
-                      required
+                      placeholder="e.g., Frontend Developer Practice"
                     />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="candidate_id">Candidate *</Label>
-                    <Select value={formData.candidate_id} onValueChange={(value) => setFormData({...formData, candidate_id: value})}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a candidate" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {candidates.map((candidate) => (
-                          <SelectItem key={candidate.id} value={candidate.id}>
-                            {candidate.full_name} ({candidate.email})
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-4">
@@ -301,35 +282,21 @@ export default function Interviews() {
                     </div>
                   </div>
                   
-                  <div>
-                    <Label htmlFor="interview_type">Interview Type</Label>
-                    <Select value={formData.interview_type} onValueChange={(value) => setFormData({...formData, interview_type: value})}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="voice">Voice Interview</SelectItem>
-                        <SelectItem value="video">Video Interview</SelectItem>
-                        <SelectItem value="technical">Technical Assessment</SelectItem>
-                        <SelectItem value="behavioral">Behavioral Interview</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
                   
                   <div>
-                    <Label htmlFor="description">Description</Label>
+                    <Label htmlFor="description">Notes (Optional)</Label>
                     <Textarea
                       id="description"
                       value={formData.description}
                       onChange={(e) => setFormData({...formData, description: e.target.value})}
                       rows={3}
-                      placeholder="Interview focus areas, specific topics to cover..."
+                      placeholder="Add any specific topics you want to focus on..."
                     />
                   </div>
                   
                   <DialogFooter>
                     <Button type="submit">
-                      {editingInterview ? 'Update Interview' : 'Schedule Interview'}
+                      {editingInterview ? 'Update Interview' : 'Book Interview'}
                     </Button>
                   </DialogFooter>
                 </form>
@@ -341,7 +308,7 @@ export default function Interviews() {
             <div className="relative">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search interviews..."
+                placeholder="Search by title or type..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -372,56 +339,46 @@ export default function Interviews() {
                 <Card key={interview.id} className="hover:shadow-lg transition-shadow">
                   <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
                     <div className="flex-1">
-                      <CardTitle className="text-lg">{interview.title}</CardTitle>
+                      <CardTitle className="text-lg">
+                        {interview.title || `${interview.interview_type.charAt(0).toUpperCase() + interview.interview_type.slice(1)} Interview`}
+                      </CardTitle>
                       <div className="flex items-center gap-2 mt-2">
                         <Badge variant={getStatusBadgeVariant(interview.status)}>
                           {interview.status.replace('_', ' ')}
                         </Badge>
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="text-xs flex items-center gap-1">
+                          {interview.interview_type === 'voice' && <Mic className="h-3 w-3" />}
+                          {interview.interview_type === 'video' && <Video className="h-3 w-3" />}
+                          {interview.interview_type === 'technical' && <Code className="h-3 w-3" />}
+                          {interview.interview_type === 'behavioral' && <MessageSquare className="h-3 w-3" />}
                           {interview.interview_type}
                         </Badge>
                       </div>
                     </div>
                     
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        {interview.status === 'scheduled' && (
-                          <DropdownMenuItem onClick={() => updateInterviewStatus(interview.id, 'in_progress')}>
-                            <Play className="mr-2 h-4 w-4" />
-                            Start Interview
-                          </DropdownMenuItem>
-                        )}
-                        {interview.status === 'in_progress' && (
-                          <DropdownMenuItem onClick={() => updateInterviewStatus(interview.id, 'completed')}>
-                            <BarChart3 className="mr-2 h-4 w-4" />
-                            Complete Interview
-                          </DropdownMenuItem>
-                        )}
-                        <DropdownMenuItem onClick={() => handleEdit(interview)}>
-                          <Edit className="mr-2 h-4 w-4" />
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          onClick={() => handleDelete(interview.id)}
-                          className="text-destructive"
+                    <div className="flex gap-2">
+                      {interview.status === 'scheduled' && (
+                        <Button 
+                          size="sm" 
+                          onClick={() => updateInterviewStatus(interview.id, 'in_progress')}
+                          className="h-8"
                         >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                          <Play className="mr-1 h-3 w-3" />
+                          Start
+                        </Button>
+                      )}
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => handleEdit(interview)}
+                        className="h-8"
+                      >
+                        Edit
+                      </Button>
+                    </div>
                   </CardHeader>
                   
                   <CardContent className="space-y-3">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <User className="h-3 w-3" />
-                      {interview.candidates?.full_name}
-                    </div>
                     
                     {interview.scheduled_at && (
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -470,7 +427,7 @@ export default function Interviews() {
               <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-semibold mb-2">No interviews found</h3>
               <p className="text-muted-foreground">
-                {searchTerm ? 'Try adjusting your search terms' : 'Get started by scheduling your first interview'}
+                {searchTerm ? 'Try adjusting your search terms' : 'Get started by booking your first practice interview'}
               </p>
             </div>
           )}
