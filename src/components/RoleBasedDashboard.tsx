@@ -61,21 +61,23 @@ export function RoleBasedDashboard() {
 
   if (isRecruiter) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-        <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-          <CardHeader>
-            <div className="flex items-center space-x-2">
-              <Mic className="h-6 w-6 text-primary" />
-              <CardTitle>Voice Interviews</CardTitle>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 animate-fade-in">
+        <Card className="relative overflow-hidden group bg-gradient-card border-primary/20 hover:shadow-elegant transition-all duration-300 transform hover:scale-105">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <CardHeader className="pb-4">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-gradient-primary rounded-xl shadow-glow">
+                <Mic className="h-6 w-6 text-white" />
+              </div>
+              <CardTitle className="text-lg">Voice Interviews</CardTitle>
             </div>
-            <CardDescription>
+            <CardDescription className="text-sm leading-relaxed">
               Conduct AI-powered voice interviews with candidates
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Link to="/interviews">
-              <Button className="w-full">
+              <Button className="w-full bg-gradient-primary hover:shadow-glow">
                 <Sparkles className="mr-2 h-4 w-4" />
                 Start Interview
               </Button>
@@ -83,20 +85,22 @@ export function RoleBasedDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
-          <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-          <CardHeader>
-            <div className="flex items-center space-x-2">
-              <FileText className="h-6 w-6 text-primary" />
-              <CardTitle>Resume Analysis</CardTitle>
+        <Card className="relative overflow-hidden group bg-gradient-card border-primary/20 hover:shadow-elegant transition-all duration-300 transform hover:scale-105">
+          <div className="absolute inset-0 bg-gradient-to-br from-secondary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <CardHeader className="pb-4">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-gradient-primary rounded-xl shadow-glow">
+                <FileText className="h-6 w-6 text-white" />
+              </div>
+              <CardTitle className="text-lg">Resume Analysis</CardTitle>
             </div>
-            <CardDescription>
+            <CardDescription className="text-sm leading-relaxed">
               Upload and analyze resumes with AI insights
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Link to="/candidates">
-              <Button variant="secondary" className="w-full">
+              <Button variant="secondary" className="w-full bg-gradient-secondary shadow-card">
                 Manage Candidates
               </Button>
             </Link>
@@ -188,44 +192,51 @@ export function RoleBasedDashboard() {
 
   // Candidate Dashboard
   return (
-    <div className="space-y-8">
+    <div className="space-y-12 animate-fade-in">
       {/* Candidate Status Banner */}
-      <Card className="bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20">
-        <CardHeader>
+      <Card className="bg-gradient-card border-primary/20 shadow-elegant overflow-hidden relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-primary-glow/5"></div>
+        <CardHeader className="relative z-10">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5" />
-                Welcome, Candidate!
+              <CardTitle className="flex items-center gap-3 text-2xl">
+                <div className="p-2 bg-gradient-primary rounded-xl shadow-glow">
+                  <User className="h-6 w-6 text-white" />
+                </div>
+                <span className="bg-gradient-to-r from-white to-primary-glow bg-clip-text text-transparent">
+                  Welcome, Candidate!
+                </span>
               </CardTitle>
-              <CardDescription className="text-lg">
+              <CardDescription className="text-lg mt-2 leading-relaxed">
                 Ready to showcase your skills? Start with a voice interview or take practice MCQs.
               </CardDescription>
             </div>
-            <Badge variant="secondary" className="flex items-center gap-1">
-              <User className="h-3 w-3" />
+            <Badge variant="secondary" className="flex items-center gap-2 px-4 py-2 bg-gradient-secondary shadow-card rounded-xl">
+              <User className="h-4 w-4" />
               Candidate Mode
             </Badge>
           </div>
         </CardHeader>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-          <CardHeader>
-            <div className="flex items-center space-x-2">
-              <Mic className="h-6 w-6 text-primary" />
-              <CardTitle>Voice Interview</CardTitle>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-slide-up">
+        <Card className="relative overflow-hidden group bg-gradient-card border-primary/20 hover:shadow-elegant transition-all duration-300 transform hover:scale-105">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <CardHeader className="pb-4">
+            <div className="flex items-center space-x-3">
+              <div className="p-3 bg-gradient-primary rounded-xl shadow-glow group-hover:animate-glow-pulse">
+                <Mic className="h-6 w-6 text-white" />
+              </div>
+              <CardTitle className="text-xl">Voice Interview</CardTitle>
             </div>
-            <CardDescription>
+            <CardDescription className="text-sm leading-relaxed">
               Take an AI-powered voice interview to demonstrate your communication skills
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Link to="/interviews">
-              <Button className="w-full">
-                <Mic className="mr-2 h-4 w-4" />
+              <Button className="w-full bg-gradient-primary hover:shadow-glow h-12 text-base">
+                <Mic className="mr-2 h-5 w-5" />
                 Start Voice Interview
               </Button>
             </Link>
