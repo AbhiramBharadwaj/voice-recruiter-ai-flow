@@ -26,7 +26,8 @@ export default {
 				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					foreground: 'hsl(var(--primary-foreground))',
+					glow: 'hsl(var(--primary-glow))'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
@@ -131,10 +132,10 @@ export default {
 				},
 				'glow-pulse': {
 					'0%, 100%': {
-						boxShadow: '0 0 20px hsl(262 80% 55% / 0.3)'
+						boxShadow: '0 0 20px hsl(142 76% 73% / 0.3)'
 					},
 					'50%': {
-						boxShadow: '0 0 40px hsl(262 80% 55% / 0.6)'
+						boxShadow: '0 0 40px hsl(142 76% 73% / 0.6)'
 					}
 				}
 			},
