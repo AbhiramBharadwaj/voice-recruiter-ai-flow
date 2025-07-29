@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import VoiceInterview from '@/components/VoiceInterview';
 
 interface Interview {
   id: string;
@@ -36,6 +37,7 @@ export default function Interviews() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editingInterview, setEditingInterview] = useState<Interview | null>(null);
+  const [activeInterviewId, setActiveInterviewId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -185,6 +187,41 @@ export default function Interviews() {
   const formatDateTime = (dateString: string) => {
     return new Date(dateString).toLocaleString();
   };
+
+  // Show voice interview when active
+  if (activeInterviewId) {
+    const activeInterview = interviews.find(i => i.id === activeInterviewId);
+    if (activeInterview) {
+      return (
+        <ProtectedRoute>
+          <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5 p-8">
+            <div className="mb-4">
+              <Button 
+                variant="outline" 
+                onClick={() => setActiveInterviewId(null)}
+                className="mb-4"
+              >
+                ← Back to Interviews
+              </Button>
+            </div>
+            <VoiceInterview
+              interviewId={activeInterview.id}
+              role={activeInterview.title || activeInterview.interview_type}
+              interests={activeInterview.description ? [activeInterview.description] : ['general']}
+              onComplete={(results) => {
+                setActiveInterviewId(null);
+                fetchInterviews();
+                toast({
+                  title: "Interview Completed!",
+                  description: `Your overall score: ${results.overall_score}%`,
+                });
+              }}
+            />
+          </div>
+        </ProtectedRoute>
+      );
+    }
+  }
 
   return (
     <ProtectedRoute>
@@ -356,26 +393,36 @@ export default function Interviews() {
                       </div>
                     </div>
                     
-                    <div className="flex gap-2">
-                      {interview.status === 'scheduled' && (
-                        <Button 
-                          size="sm" 
-                          onClick={() => updateInterviewStatus(interview.id, 'in_progress')}
-                          className="h-8"
-                        >
-                          <Play className="mr-1 h-3 w-3" />
-                          Start
-                        </Button>
-                      )}
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        onClick={() => handleEdit(interview)}
-                        className="h-8"
-                      >
-                        Edit
-                      </Button>
-                    </div>
+                     <div className="flex gap-2">
+                       {interview.status === 'scheduled' && interview.interview_type === 'voice' && (
+                         <Button 
+                           size="sm" 
+                           onClick={() => setActiveInterviewId(interview.id)}
+                           className="h-8"
+                         >
+                           <Play className="mr-1 h-3 w-3" />
+                           Start AI Voice
+                         </Button>
+                       )}
+                       {interview.status === 'scheduled' && interview.interview_type !== 'voice' && (
+                         <Button 
+                           size="sm" 
+                           onClick={() => updateInterviewStatus(interview.id, 'in_progress')}
+                           className="h-8"
+                         >
+                           <Play className="mr-1 h-3 w-3" />
+                           Start
+                         </Button>
+                       )}
+                       <Button 
+                         variant="ghost" 
+                         size="sm" 
+                         onClick={() => handleEdit(interview)}
+                         className="h-8"
+                       >
+                         Edit
+                       </Button>
+                     </div>
                   </CardHeader>
                   
                   <CardContent className="space-y-3">
