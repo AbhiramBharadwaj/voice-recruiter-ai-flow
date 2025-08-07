@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instanciate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "12.2.3 (519615d)"
+    PostgrestVersion: "13.0.4"
   }
   public: {
     Tables: {
@@ -116,16 +116,19 @@ export type Database = {
       interviews: {
         Row: {
           ai_feedback: string | null
-          candidate_id: string
           communication_score: number | null
           created_at: string
           description: string | null
           duration_minutes: number | null
           id: string
+          interview_phase: string | null
           interview_type: string | null
           overall_score: number | null
           questions: Json | null
           responses: Json | null
+          resume_content: string | null
+          resume_suggestions: Json | null
+          role_focus: string | null
           scheduled_at: string | null
           sentiment_score: number | null
           status: Database["public"]["Enums"]["interview_status"]
@@ -137,16 +140,19 @@ export type Database = {
         }
         Insert: {
           ai_feedback?: string | null
-          candidate_id: string
           communication_score?: number | null
           created_at?: string
           description?: string | null
           duration_minutes?: number | null
           id?: string
+          interview_phase?: string | null
           interview_type?: string | null
           overall_score?: number | null
           questions?: Json | null
           responses?: Json | null
+          resume_content?: string | null
+          resume_suggestions?: Json | null
+          role_focus?: string | null
           scheduled_at?: string | null
           sentiment_score?: number | null
           status?: Database["public"]["Enums"]["interview_status"]
@@ -158,16 +164,19 @@ export type Database = {
         }
         Update: {
           ai_feedback?: string | null
-          candidate_id?: string
           communication_score?: number | null
           created_at?: string
           description?: string | null
           duration_minutes?: number | null
           id?: string
+          interview_phase?: string | null
           interview_type?: string | null
           overall_score?: number | null
           questions?: Json | null
           responses?: Json | null
+          resume_content?: string | null
+          resume_suggestions?: Json | null
+          role_focus?: string | null
           scheduled_at?: string | null
           sentiment_score?: number | null
           status?: Database["public"]["Enums"]["interview_status"]
@@ -177,15 +186,7 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "interviews_candidate_id_fkey"
-            columns: ["candidate_id"]
-            isOneToOne: false
-            referencedRelation: "candidates"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       job_positions: {
         Row: {
@@ -229,6 +230,141 @@ export type Database = {
         }
         Relationships: []
       }
+      mcq_questions: {
+        Row: {
+          category: Database["public"]["Enums"]["mcq_category"]
+          correct_answer: string
+          created_at: string
+          difficulty_level: string | null
+          id: string
+          option_a: string
+          option_b: string
+          option_c: string
+          option_d: string
+          question: string
+          updated_at: string
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["mcq_category"]
+          correct_answer: string
+          created_at?: string
+          difficulty_level?: string | null
+          id?: string
+          option_a: string
+          option_b: string
+          option_c: string
+          option_d: string
+          question: string
+          updated_at?: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["mcq_category"]
+          correct_answer?: string
+          created_at?: string
+          difficulty_level?: string | null
+          id?: string
+          option_a?: string
+          option_b?: string
+          option_c?: string
+          option_d?: string
+          question?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      mcq_responses: {
+        Row: {
+          correct_answer: string
+          created_at: string
+          id: string
+          is_correct: boolean
+          question_id: string | null
+          question_text: string
+          session_id: string
+          time_taken_seconds: number | null
+          user_answer: string
+        }
+        Insert: {
+          correct_answer: string
+          created_at?: string
+          id?: string
+          is_correct: boolean
+          question_id?: string | null
+          question_text: string
+          session_id: string
+          time_taken_seconds?: number | null
+          user_answer: string
+        }
+        Update: {
+          correct_answer?: string
+          created_at?: string
+          id?: string
+          is_correct?: boolean
+          question_id?: string | null
+          question_text?: string
+          session_id?: string
+          time_taken_seconds?: number | null
+          user_answer?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mcq_responses_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "mcq_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mcq_responses_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "mcq_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mcq_sessions: {
+        Row: {
+          category: Database["public"]["Enums"]["mcq_category"] | null
+          completed_at: string | null
+          correct_answers: number
+          created_at: string
+          id: string
+          resume_content: string | null
+          score: number | null
+          session_type: string
+          total_questions: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: Database["public"]["Enums"]["mcq_category"] | null
+          completed_at?: string | null
+          correct_answers?: number
+          created_at?: string
+          id?: string
+          resume_content?: string | null
+          score?: number | null
+          session_type: string
+          total_questions?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["mcq_category"] | null
+          completed_at?: string | null
+          correct_answers?: number
+          created_at?: string
+          id?: string
+          resume_content?: string | null
+          score?: number | null
+          session_type?: string
+          total_questions?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -262,6 +398,48 @@ export type Database = {
         }
         Relationships: []
       }
+      resume_analyses: {
+        Row: {
+          ai_feedback: string | null
+          created_at: string
+          id: string
+          improvements: string[] | null
+          missing_skills: string[] | null
+          overall_score: number | null
+          resume_content: string
+          strengths: string[] | null
+          target_role: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_feedback?: string | null
+          created_at?: string
+          id?: string
+          improvements?: string[] | null
+          missing_skills?: string[] | null
+          overall_score?: number | null
+          resume_content: string
+          strengths?: string[] | null
+          target_role: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_feedback?: string | null
+          created_at?: string
+          id?: string
+          improvements?: string[] | null
+          missing_skills?: string[] | null
+          overall_score?: number | null
+          resume_content?: string
+          strengths?: string[] | null
+          target_role?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -272,6 +450,12 @@ export type Database = {
     Enums: {
       candidate_status: "active" | "hired" | "rejected" | "withdrawn"
       interview_status: "scheduled" | "in_progress" | "completed" | "cancelled"
+      mcq_category:
+        | "algorithms"
+        | "data_structures"
+        | "frontend"
+        | "backend"
+        | "databases"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -401,6 +585,13 @@ export const Constants = {
     Enums: {
       candidate_status: ["active", "hired", "rejected", "withdrawn"],
       interview_status: ["scheduled", "in_progress", "completed", "cancelled"],
+      mcq_category: [
+        "algorithms",
+        "data_structures",
+        "frontend",
+        "backend",
+        "databases",
+      ],
     },
   },
 } as const

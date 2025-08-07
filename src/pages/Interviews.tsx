@@ -84,7 +84,8 @@ export default function Interviews() {
         scheduled_at: formData.scheduled_at || null,
         duration_minutes: parseInt(formData.duration_minutes),
         interview_type: formData.interview_type,
-        candidate_id: user?.id // Student schedules for themselves
+        role_focus: formData.title || formData.interview_type,
+        interview_phase: 'scheduled'
       };
 
       if (editingInterview) {
