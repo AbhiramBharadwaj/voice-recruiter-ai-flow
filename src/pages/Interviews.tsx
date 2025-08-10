@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { AppHeader } from '@/components/AppHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -195,7 +196,9 @@ export default function Interviews() {
     if (activeInterview) {
       return (
         <ProtectedRoute>
-          <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5 p-8">
+          <div className="min-h-screen bg-gradient-hero">
+            <AppHeader />
+            <div className="p-8">
             <div className="mb-4">
               <Button 
                 variant="outline" 
@@ -218,6 +221,7 @@ export default function Interviews() {
                 });
               }}
             />
+            </div>
           </div>
         </ProtectedRoute>
       );
@@ -226,7 +230,8 @@ export default function Interviews() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+      <div className="min-h-screen bg-gradient-hero">
+        <AppHeader />
         <div className="container mx-auto px-4 py-8">
           <div className="flex justify-between items-center mb-8">
             <div>

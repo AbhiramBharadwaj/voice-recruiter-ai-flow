@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { AppHeader } from '@/components/AppHeader';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -205,7 +206,8 @@ export default function PracticeMCQs() {
 
     return (
       <ProtectedRoute>
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-gradient-hero">
+          <AppHeader />
           <div className="container mx-auto px-4 py-8">
             <div className="max-w-4xl mx-auto">
               <div className="flex items-center mb-6">
@@ -289,7 +291,8 @@ export default function PracticeMCQs() {
   if (currentSession && questions.length > 0) {
     return (
       <ProtectedRoute>
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-gradient-hero">
+          <AppHeader />
           <div className="container mx-auto px-4 py-8">
             <div className="max-w-2xl mx-auto">
               <div className="flex items-center justify-between mb-6">
@@ -371,7 +374,8 @@ export default function PracticeMCQs() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-gradient-hero">
+        <AppHeader />
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center mb-6">
