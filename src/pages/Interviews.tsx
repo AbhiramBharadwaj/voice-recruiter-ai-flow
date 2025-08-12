@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
-import { AppHeader } from '@/components/AppHeader';
+import { BackButton } from '@/components/BackButton';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -197,7 +197,7 @@ export default function Interviews() {
       return (
         <ProtectedRoute>
           <div className="min-h-screen bg-gradient-hero">
-            <AppHeader />
+      <BackButton />
             <div className="p-8">
             <div className="mb-4">
               <Button 
@@ -231,7 +231,7 @@ export default function Interviews() {
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-gradient-hero">
-        <AppHeader />
+        <BackButton />
         <div className="container mx-auto px-4 py-8">
           <div className="flex justify-between items-center mb-8">
             <div>

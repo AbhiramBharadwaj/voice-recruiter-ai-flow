@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
-import { AppHeader } from '@/components/AppHeader';
+
 import { RoleBasedDashboard } from '@/components/RoleBasedDashboard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,7 +18,7 @@ const Index = () => {
         </div>
 
         {/* Common Header */}
-        <AppHeader />
+        
 
         {/* Main Content */}
         <main className="container mx-auto px-4 py-12 relative z-10">
