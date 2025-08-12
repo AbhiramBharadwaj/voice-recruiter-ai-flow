@@ -110,39 +110,41 @@ export default function PracticeMCQs() {
   const fetchPrebuiltQuestions = async (category: string) => {
     setIsLoading(true);
     try {
-      // Create mock questions for now
-      const mockQuestions: MCQQuestion[] = [
-        {
-          id: '1',
-          question: `What is a key concept in ${category}?`,
-          option_a: 'Option A',
-          option_b: 'Option B',
-          option_c: 'Option C',
-          option_d: 'Option D',
-          correct_answer: 'A',
+      // Fetch questions securely without answers
+      const { data, error } = await supabase.functions.invoke('secure-mcq-questions', {
+        body: { 
           category: category,
-          difficulty_level: 'medium'
+          limit: 10
         }
-      ];
+      });
 
-      // Create mock session
+      if (error) throw error;
+
+      const fetchedQuestions = data.questions || [];
+      
+      if (fetchedQuestions.length === 0) {
+        toast.error('No questions available for this category yet');
+        return;
+      }
+
+      // Create session
       const mockSession: MCQSession = {
         id: 'temp-session-' + Date.now(),
         session_type: 'prebuilt',
         category: category,
         correct_answers: 0,
-        total_questions: mockQuestions.length
+        total_questions: fetchedQuestions.length
       };
 
       setCurrentSession(mockSession);
-      setQuestions(mockQuestions);
+      setQuestions(fetchedQuestions);
       setCurrentQuestionIndex(0);
       setQuestionStartTime(Date.now());
       setSelectedCategory(category);
       toast.success('Practice questions loaded!');
     } catch (error) {
       console.error('Error fetching questions:', error);
-      toast.error('Failed to load questions');
+      toast.error('Failed to load questions. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -153,36 +155,56 @@ export default function PracticeMCQs() {
 
     const currentQuestion = questions[currentQuestionIndex];
     const timeTaken = Math.floor((Date.now() - questionStartTime) / 1000);
-    const isCorrect = selectedAnswer === currentQuestion.correct_answer;
+    
+    try {
+      let isCorrect = false;
+      let correctAnswer = '';
 
-    const response: MCQResponse = {
-      question_id: currentQuestion.id,
-      question_text: currentQuestion.question,
-      user_answer: selectedAnswer,
-      correct_answer: currentQuestion.correct_answer,
-      is_correct: isCorrect,
-      time_taken_seconds: timeTaken
-    };
+      // For prebuilt questions, validate securely via API
+      if (currentSession.session_type === 'prebuilt') {
+        const { data, error } = await supabase.functions.invoke('validate-mcq-answer', {
+          body: { 
+            questionId: currentQuestion.id,
+            userAnswer: selectedAnswer
+          }
+        });
 
-    setResponses(prev => [...prev, response]);
+        if (error) throw error;
+        
+        isCorrect = data.isCorrect;
+        correctAnswer = data.correctAnswer;
+      } else {
+        // For resume-based questions, we still have the correct answer in the question object
+        isCorrect = selectedAnswer === currentQuestion.correct_answer;
+        correctAnswer = currentQuestion.correct_answer;
+      }
 
-    // Save response (mock for now)
-    console.log('Response saved:', response);
+      const response: MCQResponse = {
+        question_id: currentQuestion.id,
+        question_text: currentQuestion.question,
+        user_answer: selectedAnswer,
+        correct_answer: correctAnswer,
+        is_correct: isCorrect,
+        time_taken_seconds: timeTaken
+      };
 
-    // Move to next question or show results
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
-      setSelectedAnswer('');
-      setQuestionStartTime(Date.now());
-    } else {
-      // Quiz completed
-      const correctAnswers = responses.filter(r => r.is_correct).length + (isCorrect ? 1 : 0);
-      const score = (correctAnswers / questions.length) * 100;
+      setResponses(prev => [...prev, response]);
 
-      // Update session (mock for now)
-      console.log('Session completed:', { correctAnswers, score });
+      // Move to next question or show results
+      if (currentQuestionIndex < questions.length - 1) {
+        setCurrentQuestionIndex(prev => prev + 1);
+        setSelectedAnswer('');
+        setQuestionStartTime(Date.now());
+      } else {
+        // Quiz completed
+        const correctAnswers = responses.filter(r => r.is_correct).length + (isCorrect ? 1 : 0);
+        const score = (correctAnswers / questions.length) * 100;
 
-      setShowResults(true);
+        setShowResults(true);
+      }
+    } catch (error) {
+      console.error('Error validating answer:', error);
+      toast.error('Failed to validate answer. Please try again.');
     }
   };
 
