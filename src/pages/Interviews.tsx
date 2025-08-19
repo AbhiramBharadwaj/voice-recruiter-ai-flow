@@ -270,24 +270,6 @@ export default function Interviews() {
                             Voice Interview
                           </div>
                         </SelectItem>
-                        <SelectItem value="video">
-                          <div className="flex items-center gap-2">
-                            <Video className="h-4 w-4" />
-                            Video Interview
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="technical">
-                          <div className="flex items-center gap-2">
-                            <Code className="h-4 w-4" />
-                            Technical Assessment
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="behavioral">
-                          <div className="flex items-center gap-2">
-                            <MessageSquare className="h-4 w-4" />
-                            Behavioral Interview
-                          </div>
-                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

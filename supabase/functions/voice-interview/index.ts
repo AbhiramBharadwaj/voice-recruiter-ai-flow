@@ -33,13 +33,10 @@ serve(async (req) => {
 
     const { action, role, interests, transcript, responses, interviewId }: VoiceInterviewRequest = await req.json();
 
-    const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
-    if (!GEMINI_API_KEY) {
-      throw new Error('GEMINI_API_KEY not configured');
-    }
+    // 🔑 Hardcoded Gemini API key (⚠️ less secure!)
+    const GEMINI_API_KEY = "AIzaSyDYo0GtxH-0eQjRsevfuvMWaGRi4Dce880";
 
     if (action === 'generate_questions') {
-      // Generate 5 interview questions based on role and interests
       const prompt = `Generate 5 professional interview questions for a ${role} position. 
       Focus on these areas of interest: ${interests?.join(', ')}.
       
@@ -60,11 +57,7 @@ serve(async (req) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: prompt
-            }]
-          }],
+          contents: [{ parts: [{ text: prompt }] }],
           generationConfig: {
             temperature: 0.7,
             maxOutputTokens: 2048,
@@ -73,9 +66,8 @@ serve(async (req) => {
       });
 
       const data = await response.json();
-      const generatedText = data.candidates[0].content.parts[0].text;
-      
-      // Extract JSON from the response
+      const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
       const jsonMatch = generatedText.match(/\[[\s\S]*\]/);
       const questions = jsonMatch ? JSON.parse(jsonMatch[0]) : [];
 
@@ -85,7 +77,6 @@ serve(async (req) => {
     }
 
     if (action === 'analyze_responses') {
-      // Analyze the transcript and responses using Gemini
       const prompt = `Analyze this voice interview transcript and provide detailed feedback:
 
       TRANSCRIPT:
@@ -110,9 +101,7 @@ serve(async (req) => {
             "feedback": "Specific feedback for this question"
           }
         ]
-      }
-
-      Score each category from 0-100. Be constructive and specific in feedback.`;
+      }`;
 
       const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`, {
         method: 'POST',
@@ -120,11 +109,7 @@ serve(async (req) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: prompt
-            }]
-          }],
+          contents: [{ parts: [{ text: prompt }] }],
           generationConfig: {
             temperature: 0.3,
             maxOutputTokens: 4096,
@@ -133,9 +118,8 @@ serve(async (req) => {
       });
 
       const data = await response.json();
-      const generatedText = data.candidates[0].content.parts[0].text;
-      
-      // Extract JSON from the response
+      const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
       const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
       const analysis = jsonMatch ? JSON.parse(jsonMatch[0]) : {};
 
@@ -145,7 +129,6 @@ serve(async (req) => {
     }
 
     if (action === 'save_interview') {
-      // Save interview results to database
       const { data: user, error: userError } = await supabaseClient.auth.getUser();
       if (userError) throw userError;
 
@@ -155,8 +138,8 @@ serve(async (req) => {
         .from('interviews')
         .update({
           status: 'completed',
-          transcript: transcript,
-          responses: responses,
+          transcript,
+          responses,
           ai_feedback: analysisData.detailed_feedback,
           overall_score: analysisData.overall_score,
           technical_score: analysisData.technical_score,
